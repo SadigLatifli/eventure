@@ -31,8 +31,8 @@ apiClient.interceptors.response.use(
       window.location.href = '/login';
     }
     
-    
-    showErrorToast(error.response.data.error || error?.message || 'An error occurred');
+
+    showErrorToast((error.response?.data?.error) || error?.message || 'An error occurred');
     return Promise.reject(error);
   }
 );
