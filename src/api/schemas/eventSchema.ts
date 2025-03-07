@@ -1,7 +1,6 @@
-// eventSchemas.ts
 import { z } from 'zod';
 
-// Schema for Speaker
+// Schema for Speaker (used in full event payload)
 export const SpeakerSchema = z.object({
   contactEmail: z.string().email(),
   contactPhoneNo: z.string(),
@@ -12,9 +11,9 @@ export const SpeakerSchema = z.object({
   linkedinLink: z.string().url().optional(),
 });
 
-// Schema for Session
+// Schema for Session (used in full event payload)
 export const SessionSchema = z.object({
-  endDate: z.string(), // could use z.date() if you transform input accordingly
+  endDate: z.string(), // or transform to Date if needed
   location: z.string(),
   price: z.number(),
   queueNo: z.number(),
@@ -22,13 +21,31 @@ export const SessionSchema = z.object({
   startDate: z.string(),
 });
 
-// Main Event Schema
-export const EventSchema = z.object({
+export const SingleEventSchema = z.object({
+  detailedEventView: z.object({
+      eventId: z.string(),
+  name: z.string(),
+  eventType: z.enum(['SEMINAR', 'WORKSHOP', 'CONFERENCE']),
+  companyName: z.string(),
+  companyLogoPath: z.string().nullable(), // Already correct
+  startDate: z.string(),
+  endDate: z.string().nullable(), // Update: allow null values
+  eventPrivacyType: z.enum(['PRIVATE', 'PUBLIC']),
+  sessionViewList: z.array(SessionSchema), 
+  }),
+  users: z.array(z.any())
+// Already correct (empty array is valid)
+});
+
+
+
+// Full event schema for creating a new event (POST payload)
+export const FullEventSchema = z.object({
   companyId: z.string(),
   description: z.string(),
   endTime: z.string(),
   eventPrivacyType: z.enum(['PRIVATE', 'PUBLIC']),
-  eventType: z.enum(['SEMINAR', 'WORKSHOP', 'CONFERENCE']), // add or adjust event types as needed
+  eventType: z.enum(['SEMINAR', 'WORKSHOP', 'CONFERENCE']), // adjust as needed
   location: z.string(),
   locationLink: z.string().url().optional(),
   maxAttendeeCount: z.number(),
@@ -39,4 +56,24 @@ export const EventSchema = z.object({
   userId: z.string(),
 });
 
-export type EventPayload = z.infer<typeof EventSchema>;
+// Brief event schema for GET response (public events)
+export const EventSchemaBrief = z.object({
+  eventId: z.string(),
+  name: z.string(),
+  eventType: z.string(),
+  company_name: z.string(),
+  logoPath: z.string().nullable(),
+  startDate: z.string(),
+  endDate: z.string().nullable(),
+});
+
+// Schema for the public events response, using the brief event schema
+export const PublicEventsResponseSchema = z.object({
+  events: z.array(EventSchemaBrief),
+  count: z.number(),
+});
+
+// Type inferred for creating a new event
+export type EventPayload = z.infer<typeof FullEventSchema>;
+export type SingleEventResponse = z.infer<typeof SingleEventSchema>;
+export type SessionView = z.infer<typeof SessionSchema>;

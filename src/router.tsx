@@ -1,14 +1,15 @@
 // routers.tsx
 import { createRootRoute, createRoute, redirect } from "@tanstack/react-router";
-import Home from './views/home/pages/HomePage';
+import Home from "./views/home/pages/HomePage";
 import { isAuthenticated } from "@/utils/auth";
 import Layout from "@/components/layout";
-import Login from "@/views/Login/pages/LoginPage"
+import Login from "@/views/Login/pages/LoginPage";
 import SignUp from "@/views/SignUp/pages/SignUpPage";
 import Terms from "@/views/Terms/pages/TermsPage";
 import NotFoundPage from "./views/NotFoundPage";
 import AuthGuard from "./components/AuthGuard";
-
+import AddEventPage from "./views/events/pages/add-event-page";
+import ViewEventPage from "./views/events/pages/view-event-page";
 
 const rootRoute = createRootRoute({
   component: Layout,
@@ -19,7 +20,7 @@ const indexRoute = createRoute({
   path: "/",
   component: () => (
     <AuthGuard requireAuth={true}>
-      <Home/>
+      <Home />
     </AuthGuard>
   ),
   beforeLoad: () => {
@@ -31,7 +32,25 @@ const indexRoute = createRoute({
   },
 });
 
+const eventViewRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/events/$eventId',
+  component: () => (
+    <AuthGuard requireAuth={true}>
+      <ViewEventPage />
+    </AuthGuard>
+  ),
+});
 
+const addEventRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/add-event",
+  component: () => (
+    <AuthGuard requireAuth={true}>
+      <AddEventPage />
+    </AuthGuard>
+  ),
+});
 
 const loginRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -60,13 +79,11 @@ const signUpRoute = createRoute({
   ),
 });
 
-
-
 const termsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/terms',
-  component: Terms
-})
+  path: "/terms",
+  component: Terms,
+});
 
 const notFoundRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -83,7 +100,6 @@ const catchAllRoute = createRoute({
   },
 });
 
-
 export const routeTree = rootRoute.addChildren([
   indexRoute,
   loginRoute,
@@ -91,6 +107,6 @@ export const routeTree = rootRoute.addChildren([
   termsRoute,
   notFoundRoute,
   catchAllRoute,
+  addEventRoute,
+  eventViewRoute
 ]);
-
-

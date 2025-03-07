@@ -6,11 +6,10 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
-import { AppBreadcrumb } from "@/components/app-breadcrumb";
+// import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { getSidebarState, saveSidebarState } from "@/utils/functions";
 // import ProfileLoader from "./ProfileLoader";
-
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(getSidebarState());
@@ -23,7 +22,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   // Check if current route is one that should NOT display the sidebar/header
   const hideLayout =
-    location.pathname === "/login" || location.pathname === "/signup" || location.pathname === "/terms" || location.pathname ==='/404';  
+    location.pathname === "/login" ||
+    location.pathname === "/signup" ||
+    location.pathname === "/terms" ||
+    location.pathname === "/404";
 
   if (hideLayout) {
     // For login/signup pages, render only the outlet without sidebar and header.
@@ -39,11 +41,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 h-4" />
-            <AppBreadcrumb />
+            {/* <AppBreadcrumb /> */}
           </div>
         </header>
         <div className="flex-1 p-4 md:px-8 overflow-auto mt-16">
-         
           <Outlet>{children}</Outlet>
         </div>
       </SidebarInset>

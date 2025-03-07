@@ -1,14 +1,7 @@
 import { useState } from "react";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,12 +20,11 @@ import { useCreateEvent } from "@/api/queries/eventsQueries";
 import { useSelector } from "react-redux";
 import { selectUserData } from "@/redux/userSlice";
 import { EventPayload, FullEventSchema } from "@/api/schemas/eventSchema";
-import { Clock, MapPin, Tag, Users, Plus, X, ChevronDown, ChevronUp, Calendar } from 'lucide-react';
+import { Clock, MapPin, Tag, Users, Plus, X, ChevronDown, ChevronUp, Calendar, ArrowLeft } from 'lucide-react';
 
-export const AddEventDialog = () => {
+const AddEvent = () => {
   const { mutate, isLoading } = useCreateEvent();
   const userData = useSelector(selectUserData);
-  const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("basics");
   const [tagInput, setTagInput] = useState("");
   const [expandedSessions, setExpandedSessions] = useState<number[]>([0]);
@@ -143,7 +135,7 @@ export const AddEventDialog = () => {
       onSuccess: () => {
         console.log("Event created successfully");
         reset();
-        setIsOpen(false);
+ 
       },
       onError: (error) => {
         console.error("Failed to create event:", error);
@@ -152,72 +144,93 @@ export const AddEventDialog = () => {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button 
-          className="ml-auto bg-primary hover:bg-primary/90 text-white" 
-          onClick={() => setIsOpen(true)}
-        >
-          <Plus className="mr-2 h-4 w-4" /> Add Event
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-0 bg-white border-0 shadow-lg">
-        <DialogHeader className="px-6 pt-6 pb-2 bg-gradient-to-r from-primary/10 to-primary/5 border-b">
-          <DialogTitle className="text-2xl font-bold text-primary">
-            <Calendar className="inline-block mr-2 h-6 w-6 text-primary" />
-            Create New Event
-          </DialogTitle>
-        </DialogHeader>
+    <div className="min-h-screen bg-gray-50">
+    {/* Header */}
+    <header className="bg-white border-b border-gray-200  top-0 z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center py-4">
+          <div className="flex items-center">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="mr-4 text-gray-500 hover:text-gray-700"
+              onClick={() => window.history.back()}
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <h1 className="text-2xl font-bold text-gray-900 flex items-center">
+              <Calendar className="h-6 w-6 mr-2 text-primary" />
+              Create New Event
+            </h1>
+          </div>
+          <div className="flex items-center space-x-4">
+            <Button
+              variant="outline"
+              onClick={() => reset()}
+            
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSubmit(onSubmit)}
+              disabled={isLoading}
+       
+            >
+              {isLoading ? "Creating Event..." : "Create Event"}
+            </Button>
+          </div>
+        </div>
+      </div>
+    </header>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <Tabs
-            value={activeTab}
-            onValueChange={setActiveTab}
-            className="w-full"
-          >
-            <div className="px-6 pt-4">
-              <TabsList className="grid grid-cols-3 w-full bg-muted/50">
-                <TabsTrigger 
-                  value="basics" 
-                  className="data-[state=active]:bg-primary data-[state=active]:text-white"
-                >
-                  Basic Info
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="details"
-                  className="data-[state=active]:bg-primary data-[state=active]:text-white"
-                >
-                  Details & Tags
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="sessions"
-                  className="data-[state=active]:bg-primary data-[state=active]:text-white"
-                >
-                  Sessions
-                </TabsTrigger>
-              </TabsList>
-            </div>
+    {/* Main Content */}
+    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="w-full max-w-2xl mx-auto bg-white p-1 border border-gray-200 rounded-lg">
+            <TabsTrigger
+              value="basics"
+              className="flex-1 data-[state=active]:bg-primary data-[state=active]:text-white"
+            >
+              Basic Info
+            </TabsTrigger>
+            <TabsTrigger
+              value="details"
+              className="flex-1 data-[state=active]:bg-primary data-[state=active]:text-white"
+            >
+              Details & Tags
+            </TabsTrigger>
+            <TabsTrigger
+              value="sessions"
+              className="flex-1 data-[state=active]:bg-primary data-[state=active]:text-white"
+            >
+              Sessions
+            </TabsTrigger>
+          </TabsList>
 
-            <TabsContent value="basics" className="px-6 py-4 space-y-6">
-              <Card className="border border-muted/60 shadow-sm">
-                <CardHeader className="bg-muted/20 pb-3">
-                  <CardTitle className="text-lg text-primary flex items-center">
-                    <Calendar className="mr-2 h-5 w-5" />
+          <div className="mt-8">
+            <TabsContent value="basics" className="space-y-8">
+              <Card className="bg-white shadow-sm">
+                <CardHeader className="bg-gray-50/50 border-b">
+                  <CardTitle className="text-xl text-gray-900 flex items-center">
+                    <Calendar className="mr-2 h-5 w-5 text-primary" />
                     Event Information
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4 pt-4">
+                <CardContent className="p-6 space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-foreground/80">Event Name</label>
+                      <label className="text-sm font-medium text-gray-700">
+                        Event Name
+                      </label>
                       <Controller
                         name="name"
                         control={control}
                         render={({ field }) => (
-                          <Input 
-                            placeholder="Event Name" 
-                            {...field} 
-                            className="border-muted-foreground/20 focus:border-primary focus:ring-primary/30"
+                          <Input
+                            placeholder="Event Name"
+                            {...field}
+                            className="border-gray-300 focus:border-primary focus:ring-primary/30"
                           />
                         )}
                       />
@@ -228,50 +241,10 @@ export const AddEventDialog = () => {
                       )}
                     </div>
 
-                    {/* <div className="space-y-2">
-                      <label className="text-sm font-medium text-foreground/80">Company ID</label>
-                      <Controller
-                        name="companyId"
-                        control={control}
-                        render={({ field }) => (
-                          <Input 
-                            placeholder="Company ID" 
-                            {...field} 
-                            className="border-muted-foreground/20 focus:border-primary focus:ring-primary/30"
-                          />
-                        )}
-                      />
-                      {errors.companyId && (
-                        <p className="text-destructive text-sm">
-                          {errors.companyId.message}
-                        </p>
-                      )}
-                    </div> */}
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground/80">Description</label>
-                    <Controller
-                      name="description"
-                      control={control}
-                      render={({ field }) => (
-                        <Textarea
-                          placeholder="Provide a detailed description of the event"
-                          className="min-h-[100px] border-muted-foreground/20 focus:border-primary focus:ring-primary/30"
-                          {...field}
-                        />
-                      )}
-                    />
-                    {errors.description && (
-                      <p className="text-destructive text-sm">
-                        {errors.description.message}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-foreground/80">Event Type</label>
+                      <label className="text-sm font-medium text-gray-700">
+                        Event Type
+                      </label>
                       <Controller
                         name="eventType"
                         control={control}
@@ -280,7 +253,7 @@ export const AddEventDialog = () => {
                             value={field.value}
                             onValueChange={field.onChange}
                           >
-                            <SelectTrigger className="border-muted-foreground/20 focus:ring-primary/30">
+                            <SelectTrigger className="border-gray-300 focus:ring-primary/30">
                               <SelectValue placeholder="Select event type" />
                             </SelectTrigger>
                             <SelectContent>
@@ -299,9 +272,35 @@ export const AddEventDialog = () => {
                         </p>
                       )}
                     </div>
+                  </div>
 
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">
+                      Description
+                    </label>
+                    <Controller
+                      name="description"
+                      control={control}
+                      render={({ field }) => (
+                        <Textarea
+                          placeholder="Provide a detailed description of the event"
+                          className="min-h-[120px] border-gray-300 focus:border-primary focus:ring-primary/30"
+                          {...field}
+                        />
+                      )}
+                    />
+                    {errors.description && (
+                      <p className="text-destructive text-sm">
+                        {errors.description.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-foreground/80">Privacy</label>
+                      <label className="text-sm font-medium text-gray-700">
+                        Privacy
+                      </label>
                       <Controller
                         name="eventPrivacyType"
                         control={control}
@@ -310,7 +309,7 @@ export const AddEventDialog = () => {
                             value={field.value}
                             onValueChange={field.onChange}
                           >
-                            <SelectTrigger className="border-muted-foreground/20 focus:ring-primary/30">
+                            <SelectTrigger className="border-gray-300 focus:ring-primary/30">
                               <SelectValue placeholder="Select privacy type" />
                             </SelectTrigger>
                             <SelectContent>
@@ -330,27 +329,28 @@ export const AddEventDialog = () => {
                 </CardContent>
               </Card>
 
-              <Card className="border border-muted/60 shadow-sm">
-                <CardHeader className="bg-muted/20 pb-3">
-                  <CardTitle className="text-lg text-primary flex items-center">
-                    <Clock className="mr-2 h-5 w-5" />
+              <Card className="bg-white shadow-sm">
+                <CardHeader className="bg-gray-50/50 border-b">
+                  <CardTitle className="text-xl text-gray-900 flex items-center">
+                    <Clock className="mr-2 h-5 w-5 text-primary" />
                     Time & Location
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4 pt-4">
+                <CardContent className="p-6 space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <label className="text-sm font-medium flex items-center text-foreground/80">
-                        <Clock className="h-4 w-4 mr-2 text-primary/70" /> Start Time
+                      <label className="text-sm font-medium flex items-center text-gray-700">
+                        <Clock className="h-4 w-4 mr-2 text-primary/70" /> Start
+                        Time
                       </label>
                       <Controller
                         name="startTime"
                         control={control}
                         render={({ field }) => (
-                          <Input 
-                            type="datetime-local" 
-                            {...field} 
-                            className="border-muted-foreground/20 focus:border-primary focus:ring-primary/30"
+                          <Input
+                            type="datetime-local"
+                            {...field}
+                            className="border-gray-300 focus:border-primary focus:ring-primary/30"
                           />
                         )}
                       />
@@ -362,17 +362,18 @@ export const AddEventDialog = () => {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-sm font-medium flex items-center text-foreground/80">
-                        <Clock className="h-4 w-4 mr-2 text-primary/70" /> End Time
+                      <label className="text-sm font-medium flex items-center text-gray-700">
+                        <Clock className="h-4 w-4 mr-2 text-primary/70" /> End
+                        Time
                       </label>
                       <Controller
                         name="endTime"
                         control={control}
                         render={({ field }) => (
-                          <Input 
-                            type="datetime-local" 
-                            {...field} 
-                            className="border-muted-foreground/20 focus:border-primary focus:ring-primary/30"
+                          <Input
+                            type="datetime-local"
+                            {...field}
+                            className="border-gray-300 focus:border-primary focus:ring-primary/30"
                           />
                         )}
                       />
@@ -386,17 +387,18 @@ export const AddEventDialog = () => {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <label className="text-sm font-medium flex items-center text-foreground/80">
-                        <MapPin className="h-4 w-4 mr-2 text-primary/70" /> Location
+                      <label className="text-sm font-medium flex items-center text-gray-700">
+                        <MapPin className="h-4 w-4 mr-2 text-primary/70" />{" "}
+                        Location
                       </label>
                       <Controller
                         name="location"
                         control={control}
                         render={({ field }) => (
-                          <Input 
-                            placeholder="Event location" 
-                            {...field} 
-                            className="border-muted-foreground/20 focus:border-primary focus:ring-primary/30"
+                          <Input
+                            placeholder="Event location"
+                            {...field}
+                            className="border-gray-300 focus:border-primary focus:ring-primary/30"
                           />
                         )}
                       />
@@ -408,17 +410,17 @@ export const AddEventDialog = () => {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-foreground/80">
+                      <label className="text-sm font-medium text-gray-700">
                         Location Link
                       </label>
                       <Controller
                         name="locationLink"
                         control={control}
                         render={({ field }) => (
-                          <Input 
-                            placeholder="https://..." 
-                            {...field} 
-                            className="border-muted-foreground/20 focus:border-primary focus:ring-primary/30"
+                          <Input
+                            placeholder="https://..."
+                            {...field}
+                            className="border-gray-300 focus:border-primary focus:ring-primary/30"
                           />
                         )}
                       />
@@ -433,18 +435,19 @@ export const AddEventDialog = () => {
               </Card>
             </TabsContent>
 
-            <TabsContent value="details" className="px-6 py-4 space-y-6">
-              <Card className="border border-muted/60 shadow-sm">
-                <CardHeader className="bg-muted/20 pb-3">
-                  <CardTitle className="text-lg text-primary flex items-center">
-                    <Users className="mr-2 h-5 w-5" />
+            <TabsContent value="details" className="space-y-8">
+              <Card className="bg-white shadow-sm">
+                <CardHeader className="bg-gray-50/50 border-b">
+                  <CardTitle className="text-xl text-gray-900 flex items-center">
+                    <Users className="mr-2 h-5 w-5 text-primary" />
                     Additional Details
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4 pt-4">
+                <CardContent className="p-6 space-y-6">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium flex items-center text-foreground/80">
-                      <Users className="h-4 w-4 mr-2 text-primary/70" /> Maximum Attendees
+                    <label className="text-sm font-medium flex items-center text-gray-700">
+                      <Users className="h-4 w-4 mr-2 text-primary/70" /> Maximum
+                      Attendees
                     </label>
                     <Controller
                       name="maxAttendeeCount"
@@ -454,10 +457,8 @@ export const AddEventDialog = () => {
                           type="number"
                           placeholder="0"
                           {...field}
-                          onChange={(e) =>
-                            field.onChange(e.target.valueAsNumber)
-                          }
-                          className="border-muted-foreground/20 focus:border-primary focus:ring-primary/30"
+                          onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                          className="border-gray-300 focus:border-primary focus:ring-primary/30"
                         />
                       )}
                     />
@@ -469,7 +470,7 @@ export const AddEventDialog = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-sm font-medium flex items-center text-foreground/80">
+                    <label className="text-sm font-medium flex items-center text-gray-700">
                       <Tag className="h-4 w-4 mr-2 text-primary/70" /> Tags
                     </label>
                     <div className="flex space-x-2">
@@ -483,11 +484,11 @@ export const AddEventDialog = () => {
                             addTag();
                           }
                         }}
-                        className="flex-1 border-muted-foreground/20 focus:border-primary focus:ring-primary/30"
+                        className="flex-1 border-gray-300 focus:border-primary focus:ring-primary/30"
                       />
-                      <Button 
-                        type="button" 
-                        onClick={addTag} 
+                      <Button
+                        type="button"
+                        onClick={addTag}
                         size="sm"
                         className="bg-primary hover:bg-primary/90"
                       >
@@ -496,7 +497,7 @@ export const AddEventDialog = () => {
                     </div>
                     <div className="flex flex-wrap gap-2 mt-3">
                       {tags.length === 0 && (
-                        <div className="text-sm text-muted-foreground italic">
+                        <div className="text-sm text-gray-500 italic">
                           No tags added yet
                         </div>
                       )}
@@ -524,12 +525,15 @@ export const AddEventDialog = () => {
               </Card>
             </TabsContent>
 
-            <TabsContent value="sessions" className="px-6 py-4 space-y-6">
+            <TabsContent value="sessions" className="space-y-8">
               {fields.map((field, index) => (
-                <Card key={field.id} className="overflow-hidden border border-muted/60 shadow-sm">
-                  <CardHeader className="py-3 px-4 bg-muted/20 border-b border-muted/30">
+                <Card
+                  key={field.id}
+                  className="bg-white shadow-sm overflow-hidden"
+                >
+                  <CardHeader className="py-4 px-6 bg-gray-50/50 border-b">
                     <div className="flex justify-between items-center">
-                      <CardTitle className="text-lg flex items-center text-primary">
+                      <CardTitle className="text-xl text-gray-900 flex items-center">
                         Session {index + 1}
                       </CardTitle>
                       <div className="flex items-center space-x-2">
@@ -562,10 +566,10 @@ export const AddEventDialog = () => {
                   </CardHeader>
 
                   {expandedSessions.includes(index) && (
-                    <CardContent className="p-4 space-y-6">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <CardContent className="p-6 space-y-8">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
-                          <label className="text-sm font-medium text-foreground/80">
+                          <label className="text-sm font-medium text-gray-700">
                             Location
                           </label>
                           <Controller
@@ -575,7 +579,7 @@ export const AddEventDialog = () => {
                               <Input
                                 placeholder="Session location"
                                 {...field}
-                                className="border-muted-foreground/20 focus:border-primary focus:ring-primary/30"
+                                className="border-gray-300 focus:border-primary focus:ring-primary/30"
                               />
                             )}
                           />
@@ -587,7 +591,9 @@ export const AddEventDialog = () => {
                         </div>
 
                         <div className="space-y-2">
-                          <label className="text-sm font-medium text-foreground/80">Price</label>
+                          <label className="text-sm font-medium text-gray-700">
+                            Price
+                          </label>
                           <Controller
                             name={`sessions.${index}.price`}
                             control={control}
@@ -599,7 +605,7 @@ export const AddEventDialog = () => {
                                 onChange={(e) =>
                                   field.onChange(e.target.valueAsNumber)
                                 }
-                                className="border-muted-foreground/20 focus:border-primary focus:ring-primary/30"
+                                className="border-gray-300 focus:border-primary focus:ring-primary/30"
                               />
                             )}
                           />
@@ -611,7 +617,7 @@ export const AddEventDialog = () => {
                         </div>
 
                         <div className="space-y-2">
-                          <label className="text-sm font-medium text-foreground/80">
+                          <label className="text-sm font-medium text-gray-700">
                             Queue Number
                           </label>
                           <Controller
@@ -625,7 +631,7 @@ export const AddEventDialog = () => {
                                 onChange={(e) =>
                                   field.onChange(e.target.valueAsNumber)
                                 }
-                                className="border-muted-foreground/20 focus:border-primary focus:ring-primary/30"
+                                className="border-gray-300 focus:border-primary focus:ring-primary/30"
                               />
                             )}
                           />
@@ -637,19 +643,19 @@ export const AddEventDialog = () => {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
-                          <label className="text-sm font-medium text-foreground/80">
+                          <label className="text-sm font-medium text-gray-700">
                             Start Date
                           </label>
                           <Controller
                             name={`sessions.${index}.startDate`}
                             control={control}
                             render={({ field }) => (
-                              <Input 
-                                type="datetime-local" 
-                                {...field} 
-                                className="border-muted-foreground/20 focus:border-primary focus:ring-primary/30"
+                              <Input
+                                type="datetime-local"
+                                {...field}
+                                className="border-gray-300 focus:border-primary focus:ring-primary/30"
                               />
                             )}
                           />
@@ -661,17 +667,17 @@ export const AddEventDialog = () => {
                         </div>
 
                         <div className="space-y-2">
-                          <label className="text-sm font-medium text-foreground/80">
+                          <label className="text-sm font-medium text-gray-700">
                             End Date
                           </label>
                           <Controller
                             name={`sessions.${index}.endDate`}
                             control={control}
                             render={({ field }) => (
-                              <Input 
-                                type="datetime-local" 
-                                {...field} 
-                                className="border-muted-foreground/20 focus:border-primary focus:ring-primary/30"
+                              <Input
+                                type="datetime-local"
+                                {...field}
+                                className="border-gray-300 focus:border-primary focus:ring-primary/30"
                               />
                             )}
                           />
@@ -683,23 +689,25 @@ export const AddEventDialog = () => {
                         </div>
                       </div>
 
-                      <Separator className="bg-muted/40" />
+                      <Separator className="bg-gray-200" />
 
-                      <div className="space-y-4">
-                        <h3 className="font-medium text-primary">Speaker Information</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-6">
+                        <h3 className="font-medium text-lg text-primary">
+                          Speaker Information
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           <div className="space-y-2">
-                            <label className="text-sm font-medium text-foreground/80">
+                            <label className="text-sm font-medium text-gray-700">
                               Full Name
                             </label>
                             <Controller
                               name={`sessions.${index}.speaker.fullName`}
                               control={control}
                               render={({ field }) => (
-                                <Input 
-                                  placeholder="Speaker name" 
-                                  {...field} 
-                                  className="border-muted-foreground/20 focus:border-primary focus:ring-primary/30"
+                                <Input
+                                  placeholder="Speaker name"
+                                  {...field}
+                                  className="border-gray-300 focus:border-primary focus:ring-primary/30"
                                 />
                               )}
                             />
@@ -714,7 +722,9 @@ export const AddEventDialog = () => {
                           </div>
 
                           <div className="space-y-2">
-                            <label className="text-sm font-medium text-foreground/80">Email</label>
+                            <label className="text-sm font-medium text-gray-700">
+                              Email
+                            </label>
                             <Controller
                               name={`sessions.${index}.speaker.contactEmail`}
                               control={control}
@@ -723,12 +733,11 @@ export const AddEventDialog = () => {
                                   type="email"
                                   placeholder="speaker@example.com"
                                   {...field}
-                                  className="border-muted-foreground/20 focus:border-primary focus:ring-primary/30"
+                                  className="border-gray-300 focus:border-primary focus:ring-primary/30"
                                 />
                               )}
                             />
-                            {errors.sessions?.[index]?.speaker
-                              ?.contactEmail && (
+                            {errors.sessions?.[index]?.speaker?.contactEmail && (
                               <p className="text-destructive text-sm">
                                 {
                                   errors.sessions[index]?.speaker?.contactEmail
@@ -739,7 +748,9 @@ export const AddEventDialog = () => {
                           </div>
 
                           <div className="space-y-2">
-                            <label className="text-sm font-medium text-foreground/80">Phone</label>
+                            <label className="text-sm font-medium text-gray-700">
+                              Phone
+                            </label>
                             <Controller
                               name={`sessions.${index}.speaker.contactPhoneNo`}
                               control={control}
@@ -747,7 +758,7 @@ export const AddEventDialog = () => {
                                 <Input
                                   placeholder="+1 (555) 123-4567"
                                   {...field}
-                                  className="border-muted-foreground/20 focus:border-primary focus:ring-primary/30"
+                                  className="border-gray-300 focus:border-primary focus:ring-primary/30"
                                 />
                               )}
                             />
@@ -755,15 +766,15 @@ export const AddEventDialog = () => {
                               ?.contactPhoneNo && (
                               <p className="text-destructive text-sm">
                                 {
-                                  errors.sessions[index]?.speaker
-                                    ?.contactPhoneNo?.message
+                                  errors.sessions[index]?.speaker?.contactPhoneNo
+                                    ?.message
                                 }
                               </p>
                             )}
                           </div>
 
                           <div className="space-y-2 md:col-span-2">
-                            <label className="text-sm font-medium text-foreground/80">
+                            <label className="text-sm font-medium text-gray-700">
                               Description
                             </label>
                             <Controller
@@ -773,7 +784,7 @@ export const AddEventDialog = () => {
                                 <Textarea
                                   placeholder="Speaker bio"
                                   {...field}
-                                  className="border-muted-foreground/20 focus:border-primary focus:ring-primary/30"
+                                  className="border-gray-300 focus:border-primary focus:ring-primary/30"
                                 />
                               )}
                             />
@@ -788,9 +799,9 @@ export const AddEventDialog = () => {
                           </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                           <div className="space-y-2">
-                            <label className="text-sm font-medium text-foreground/80">
+                            <label className="text-sm font-medium text-gray-700">
                               LinkedIn
                             </label>
                             <Controller
@@ -800,12 +811,11 @@ export const AddEventDialog = () => {
                                 <Input
                                   placeholder="https://linkedin.com/in/..."
                                   {...field}
-                                  className="border-muted-foreground/20 focus:border-primary focus:ring-primary/30"
+                                  className="border-gray-300 focus:border-primary focus:ring-primary/30"
                                 />
                               )}
                             />
-                            {errors.sessions?.[index]?.speaker
-                              ?.linkedinLink && (
+                            {errors.sessions?.[index]?.speaker?.linkedinLink && (
                               <p className="text-destructive text-sm">
                                 {
                                   errors.sessions[index]?.speaker?.linkedinLink
@@ -816,7 +826,7 @@ export const AddEventDialog = () => {
                           </div>
 
                           <div className="space-y-2">
-                            <label className="text-sm font-medium text-foreground/80">
+                            <label className="text-sm font-medium text-gray-700">
                               Facebook
                             </label>
                             <Controller
@@ -826,23 +836,21 @@ export const AddEventDialog = () => {
                                 <Input
                                   placeholder="https://facebook.com/..."
                                   {...field}
-                                  className="border-muted-foreground/20 focus:border-primary focus:ring-primary/30"
+                                  className="border-gray-300 focus:border-primary focus:ring-primary/30"
                                 />
                               )}
                             />
-                            {errors.sessions?.[index]?.speaker
-                              ?.facebookLink && (
+                            {errors.sessions?.[index]?.speaker?.facebookLink && (
                               <p className="text-destructive text-sm">
                                 {
                                   errors.sessions[index]?.speaker?.facebookLink
                                     ?.message
                                 }
-                              </p>
-                            )}
+                              </p> )}
                           </div>
 
                           <div className="space-y-2">
-                            <label className="text-sm font-medium text-foreground/80">
+                            <label className="text-sm font-medium text-gray-700">
                               Instagram
                             </label>
                             <Controller
@@ -852,12 +860,11 @@ export const AddEventDialog = () => {
                                 <Input
                                   placeholder="https://instagram.com/..."
                                   {...field}
-                                  className="border-muted-foreground/20 focus:border-primary focus:ring-primary/30"
+                                  className="border-gray-300 focus:border-primary focus:ring-primary/30"
                                 />
                               )}
                             />
-                            {errors.sessions?.[index]?.speaker
-                              ?.instagramLink && (
+                            {errors.sessions?.[index]?.speaker?.instagramLink && (
                               <p className="text-destructive text-sm">
                                 {
                                   errors.sessions[index]?.speaker?.instagramLink
@@ -899,46 +906,13 @@ export const AddEventDialog = () => {
                 <Plus className="h-4 w-4 mr-2" /> Add Another Session
               </Button>
             </TabsContent>
-          </Tabs>
-          
-          <DialogFooter className="px-6 pb-6 pt-2 border-t bg-muted/10">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setIsOpen(false)}
-              className="border-muted-foreground/30 hover:bg-muted/20"
-            >
-              Cancel
-            </Button>
-
-            {activeTab === "basics" ? (
-              <Button 
-                type="button" 
-                onClick={() => setActiveTab("details")}
-                className="bg-primary hover:bg-primary/90"
-              >
-                Next: Details & Tags
-              </Button>
-            ) : activeTab === "details" ? (
-              <Button 
-                type="button" 
-                onClick={() => setActiveTab("sessions")}
-                className="bg-primary hover:bg-primary/90"
-              >
-                Next: Sessions
-              </Button>
-            ) : (
-              <Button 
-                type="submit" 
-                disabled={isLoading}
-                className="bg-primary hover:bg-primary/90"
-              >
-                {isLoading ? "Creating Event..." : "Create Event"}
-              </Button>
-            )}
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+          </div>
+        </Tabs>
+      </form>
+    </main>
+  </div>
   );
 };
+
+
+export default AddEvent
