@@ -12,13 +12,11 @@ import { useSelector } from "react-redux";
 import { selectUserData } from "@/redux/userSlice";
 import { formatDateTime } from "@/utils/functions";
 import { useNavigate, useRouter } from "@tanstack/react-router";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
+
+
 import { Button } from "@/components/ui/button";
+
+import { Eye, Pencil, Trash2 } from "lucide-react";
 
 const PublicEventsList = () => {
   const router = useRouter();
@@ -63,12 +61,14 @@ const PublicEventsList = () => {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Event Name</TableHead>
-            <TableHead>Event Type</TableHead>
-            <TableHead>Company Name</TableHead>
-            <TableHead>Start Date</TableHead>
-            <TableHead>End Date</TableHead>
-            <TableHead>Actions</TableHead>
+            <TableHead>Tədbir Adı</TableHead>
+            <TableHead>Növü</TableHead>
+            <TableHead>kategoriya</TableHead>
+            <TableHead>Məkan</TableHead>
+            <TableHead>Tarix</TableHead>
+            <TableHead>İştirakçı Sayı</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -77,25 +77,39 @@ const PublicEventsList = () => {
               <TableCell>{event.name}</TableCell>
               <TableCell>{event.eventType}</TableCell>
               <TableCell>{event.company_name}</TableCell>
-              <TableCell>{formatDateTime(event.startDate)}</TableCell>
-              <TableCell>{formatDateTime(event.endDate)}</TableCell>
-              <TableCell>
-                <DropdownMenu>
-                  <DropdownMenuTrigger>...</DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem onClick={() => handleView(event.eventId)}>
-                      View
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleEdit(event.eventId)}>
-                      Edit
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => handleDelete(event.eventId)}
-                    >
-                      Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+              <TableCell></TableCell>
+              <TableCell>{formatDateTime(event.startDate)} - {formatDateTime(event.endDate)}</TableCell>
+              <TableCell></TableCell>
+              <TableCell className="text-right">
+                <div className="flex justify-end gap-2">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleView(event.eventId)}
+                    className="text-gray-600 hover:text-primary hover:bg-primary/10"
+                    title="View"
+                  >
+                    <Eye className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleEdit(event.eventId)}
+                    className="text-gray-600 hover:text-blue-600 hover:bg-blue-100"
+                    title="Edit"
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleDelete(event.eventId)}
+                    className="text-gray-600 hover:text-destructive hover:bg-destructive/10"
+                    title="Delete"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </TableCell>
             </TableRow>
           ))}

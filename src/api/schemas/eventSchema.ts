@@ -3,7 +3,7 @@ import { z } from 'zod';
 // Schema for Speaker (used in full event payload)
 export const SpeakerSchema = z.object({
   contactEmail: z.string().email(),
-  contactPhoneNo: z.string(),
+  occupation: z.string(),
   description: z.string(),
   facebookLink: z.string().url().optional(),
   fullName: z.string(),
@@ -13,10 +13,8 @@ export const SpeakerSchema = z.object({
 
 // Schema for Session (used in full event payload)
 export const SessionSchema = z.object({
-  endDate: z.string(), // or transform to Date if needed
   location: z.string(),
-  price: z.number(),
-  queueNo: z.number(),
+  isOnline: z.boolean(),
   speaker: SpeakerSchema,
   startDate: z.string(),
 });
@@ -54,6 +52,20 @@ export const FullEventSchema = z.object({
   startTime: z.string(),
   tags: z.array(z.string()),
   userId: z.string(),
+  bannerImage: z
+    .any() // Using any for FileList since zod doesn't have native file support
+    .optional()
+    .refine(
+      (files) =>
+        !files ||
+        !files[0] ||
+        ["image/jpeg", "image/png", "image/gif"].includes(files[0].type),
+      "Please upload a valid image file (JPEG, PNG, or GIF)"
+    )
+    .refine(
+      (files) => !files || !files[0] || files[0].size <= 5 * 1024 * 1024,
+      "Image size must be less than 5MB"
+    ),
 });
 
 // Brief event schema for GET response (public events)
